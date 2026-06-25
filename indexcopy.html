@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Results Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans text-slate-900">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white border-b sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="bg-blue-600 p-2 rounded-lg text-white">
+                <img src="/static/img/adhi.logo.png" alt="university logo" class="h-10 w-auto object-contain scale-150">
+            </div>
+            <span class="text-xl font-bold tracking-tight">ADHI STUDENT HUB</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="hidden md:block text-sm font-medium text-slate-500">Academic Year 2025-26</span>
+            <div class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center border-2 border-white shadow-sm">
+                <i class="fas fa-user text-slate-500"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Hero Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold">Student Dashboard</h1>
+            <p class="text-slate-500">Access your grades, schedules, and academic tools.</p>
+        </div>
+
+        <!-- Primary Tools Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <!-- GPA Calculator Card -->
+            <div class="glass p-6 rounded-2xl shadow-sm hover:translate-y-[-4px] transition-all duration-300">
+                <div class="text-blue-600 mb-4 bg-blue-50 w-12 h-12 flex items-center justify-center rounded-xl">
+                    <i class="fas fa-calculator text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-lg">GPA Calculator</h3>
+                <p class="text-sm text-slate-500 mt-2">Calculate CGPA</p>
+                <button class="mt-4 w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium">View Results</button>
+            </div>
+
+            <!-- Results Card -->
+            <div class="glass p-6 rounded-2xl shadow-sm hover:translate-y-[-4px] transition-all duration-300">
+                <div class="text-indigo-600 mb-4 bg-indigo-50 w-12 h-12 flex items-center justify-center rounded-xl">
+                    <i class="fas fa-file-invoice text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-lg">Semester Results</h3>
+                <p class="text-sm text-slate-500 mt-2">Current CGPA: <span class="font-bold text-slate-900 text-base">8.92</span></p>
+                <button class="mt-4 w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium">View Results</button>
+            </div>
+
+            <!-- Time Table Card -->
+            <div class="glass p-6 rounded-2xl shadow-sm hover:translate-y-[-4px] transition-all duration-300">
+                <div class="text-emerald-600 mb-4 bg-emerald-50 w-12 h-12 flex items-center justify-center rounded-xl">
+                    <i class="fas fa-clock text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-lg">Time Table</h3>
+                <p class="text-sm text-slate-500 mt-2">Next Exam: <span class="text-emerald-600 font-semibold">14th May</span></p>
+               <button class="mt-4 w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium">View Time Table</button>
+            </div>
+
+            <!-- Rank List Card -->
+            <div class="glass p-6 rounded-2xl shadow-sm hover:translate-y-[-4px] transition-all duration-300">
+                <div class="text-amber-500 mb-4 bg-amber-50 w-12 h-12 flex items-center justify-center rounded-xl">
+                    <i class="fas fa-crown text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-lg">Rank List</h3>
+                 <p class="text-sm text-slate-500 mt-2">You are currently in the <span class="font-bold">Top 5%</span> of your batch.</p>
+                
+                <button class="mt-4 w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium">View Leaders</button>
+            </div>
+        
+
+            <!--Internal assessment-->
+            
+            <div class="glass p-6 rounded-2xl shadow-sm hover:translate-y-[-4px] transition-all duration-300">
+                <div class="text-amber-500 mb-4 bg-amber-50 w-12 h-12 flex items-center justify-center rounded-xl">
+                     <i class="fas fa-chart-line text-blue-600"></i>
+                </div>
+                <h3 class="font-bold text-lg">Internal Assessment</h3>
+                <p class="text-sm text-slate-500 mt-2">Track your internals score.</p>
+                <button class="mt-4 w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium">View Leaders</button>
+            </div>
+        
+
+            <!-- Events Card -->
+            <div class="glass p-6 rounded-2xl shadow-sm hover:translate-y-[-4px] transition-all duration-300 border border-white/20">
+                 <div class="text-indigo-600 mb-4 bg-indigo-50 w-12 h-12 flex items-center justify-center rounded-xl">
+                    <i class="fas fa-calendar-alt text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-lg">Upcoming Events</h3>
+                 <p class="text-sm text-slate-500 mt-2">Next event: <span class="font-bold text-indigo-600">Tech Symposium</span> starts in 2 days.</p>
+    
+                 <button class="mt-4 w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">Register Now</button>
+        </div>
+
+            <!-- Revaluation Card -->
+            <div class="glass p-6 rounded-2xl shadow-sm hover:translate-y-[-4px] transition-all duration-300 border border-white/20">
+                <div class="text-emerald-600 mb-4 bg-emerald-50 w-12 h-12 flex items-center justify-center rounded-xl">
+                    <i class="fas fa-sync-alt text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-lg">Revaluation</h3>
+                <p class="text-sm text-slate-500 mt-2">Status: <span class="font-bold text-emerald-600">Open</span> for Semester 4 examinations.</p>
+    
+                <button class="mt-4 w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">Apply Now</button>
+        </div>
+        <!-- Admin Access Card -->
+<div class="glass p-6 md:p-8 rounded-2xl shadow-sm hover:translate-y-[-4px] transition-all duration-300 border-l-4 border-l-violet-600">
+    <div class="flex justify-between items-start">
+        <div class="text-violet-600 mb-4 bg-violet-50 w-12 h-12 flex items-center justify-center rounded-xl">
+            <i class="fas fa-user-shield text-2xl"></i>
+        </div>
+        <span class="text-[10px] font-bold uppercase tracking-wider bg-violet-100 text-violet-700 px-2 py-1 rounded-md">Restricted</span>
+    </div>
+    <h3 class="font-bold text-xl mb-2">Admin Control</h3>
+    <p class="text-sm text-slate-500 leading-relaxed">
+        Access management tools, student databases, and portal configuration settings.
+    </p>
+    
+    <div class="mt-6 space-y-3">
+        <button class="w-full bg-violet-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-700 transition flex items-center justify-center gap-2">
+            <i class="fas fa-lock text-xs"></i>
+            Admin Login
+        </button>
+        <p class="text-[10px] text-center text-slate-400">Authorized Personnel Only</p>
+    </div>
+</div>
+        </div>
+            <!-- Complaints & Issues -->
+            <div class="glass rounded-2xl p-6 shadow-sm border-t-4 border-t-red-500">
+                <h3 class="text-xl font-bold mb-4">Support & Help</h3>
+                <p class="text-sm text-slate-500 mb-6">Discrepancy in marks? Report an issue to the controller of exams.</p>
+                <div class="space-y-3">
+                    <button class="w-full text-left p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition flex items-center justify-between group">
+                        <span class="text-sm font-semibold">Report Grade Issue</span>
+                        <i class="fas fa-chevron-right text-slate-300 group-hover:text-red-500 transition"></i>
+                    </button>
+                    <button class="w-full text-left p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition flex items-center justify-between group">
+                        <span class="text-sm font-semibold">Technical Feedback</span>
+                        <i class="fas fa-chevron-right text-slate-300 group-hover:text-blue-500 transition"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+# --- .gitignore ---
+
+# Environment variables (CRITICAL: Never commit your .env file)
+.env
+
+# Local SQLite databases (Created by your fallback SQLAlchemy config)
+database.db
+instance/
+*.sqlite3
+
+# Virtual Environments (Where your pip packages are stored locally)
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Uploaded test files (Optional: prevents you from committing test CSV/Excel sheets)
+*.csv
+*.xls
+*.xlsx
+
+# OS generated files
+.DS_Store
+Thumbs.db

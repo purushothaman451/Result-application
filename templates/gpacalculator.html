@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anna Univ GPA & CGPA Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col font-sans text-slate-900">
+    
+    <nav class="bg-white border-b sticky top-0 z-50 px-4 md:px-6 py-3 flex justify-between items-center shadow-sm w-full">
+        <div class="flex items-center gap-3 md:gap-4">
+            <div class="bg-blue-600 h-10 w-10 md:h-12 md:w-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 shadow-inner p-1.5">
+                <img src="/static/img/adhi.logo.png" alt="university logo" class="max-h-full max-w-full object-contain">
+            </div>
+            <div class="flex flex-col justify-center">
+                <span class="text-[15px] md:text-xl font-extrabold tracking-tight text-blue-900 leading-none">ADHI STUDENT HUB</span>
+                <span class="text-[10px] md:text-xs text-slate-500 font-bold uppercase mt-0.5 tracking-wider">Portal v3.0</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 md:gap-3">
+            <a href="/" class="hidden sm:block bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all active:scale-95">Home</a>
+            <a href="/logout" class="bg-slate-900 text-white px-4 py-2 md:px-5 md:py-2 rounded-xl font-bold text-sm hover:bg-red-600 shadow-md transition-all active:scale-95">Logout</a>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex items-center justify-center p-4 md:p-8 w-full">
+        
+        <div class="w-full max-w-4xl bg-white/90 backdrop-blur-xl p-5 sm:p-8 md:p-10 rounded-[2rem] shadow-2xl border border-slate-100 relative overflow-hidden">
+            
+            <div id="selection-screen" class="flex flex-col items-center justify-center text-center py-10 transition-all duration-500">
+                <div class="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <i class="fas fa-calculator text-blue-600 text-4xl"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">GPA & CGPA Calculator</h2>
+                <p class="text-slate-500 mb-10 max-w-md">Select whose academic performance you want to calculate today based on Anna University norms.</p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+                    <button onclick="startCalculator('self')" class="flex-1 bg-white border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 text-slate-700 p-6 rounded-2xl font-bold transition-all active:scale-95 group shadow-sm hover:shadow-md">
+                        <i class="fas fa-user text-3xl mb-3 text-slate-400 group-hover:text-blue-500 transition-colors"></i>
+                        <span class="block text-lg">For Myself</span>
+                    </button>
+                    
+                    <button onclick="startCalculator('friend')" class="flex-1 bg-white border-2 border-slate-200 hover:border-purple-500 hover:bg-purple-50 text-slate-700 p-6 rounded-2xl font-bold transition-all active:scale-95 group shadow-sm hover:shadow-md">
+                        <i class="fas fa-user-friends text-3xl mb-3 text-slate-400 group-hover:text-purple-500 transition-colors"></i>
+                        <span class="block text-lg">For a Friend</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="calculator-screen" class="hidden transition-all duration-500 opacity-0">
+                
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 md:mb-10">
+                    <div class="flex items-center gap-4 md:gap-5">
+                        <button onclick="goBack()" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center text-slate-500 transition-colors shrink-0">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div>
+                            <h2 id="calc-title" class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Your Performance</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 w-full lg:w-auto">
+                        <div class="flex-1 lg:flex-none bg-blue-50/80 border border-blue-100 px-6 py-4 rounded-2xl text-center shadow-inner flex flex-col justify-center">
+                            <span class="block text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Current Sem GPA</span>
+                            <span id="gpa-result" class="text-3xl md:text-4xl font-black text-blue-600 leading-none">0.00</span>
+                        </div>
+                        <div class="flex-1 lg:flex-none bg-indigo-50 border border-indigo-100 px-6 py-4 rounded-2xl text-center shadow-inner flex flex-col justify-center">
+                            <span class="block text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">Overall CGPA</span>
+                            <span id="cgpa-result" class="text-3xl md:text-4xl font-black text-indigo-600 leading-none">0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 border-b pb-2"><i class="fas fa-book-open text-blue-500 mr-2"></i>Current Semester Subjects</h3>
+                    
+                    <div class="hidden md:grid grid-cols-12 gap-4 px-2 mb-2">
+                        <div class="col-span-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Subject Name</div>
+                        <div class="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Credits</div>
+                        <div class="col-span-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Expected Grade</div>
+                        <div class="col-span-1"></div>
+                    </div>
+
+                    <div id="subjects-list" class="space-y-3">
+                        <div class="subject-row grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-4 items-center p-4 md:p-3 bg-white border border-slate-100 rounded-2xl md:rounded-xl shadow-sm hover:shadow-md transition-all relative group">
+                            <div class="md:col-span-6">
+                                <label class="md:hidden block text-[10px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Subject</label>
+                                <input type="text" placeholder="e.g. Engineering Mathematics" 
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-300">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 md:col-span-6 md:grid-cols-6 items-center">
+                                <div class="md:col-span-2">
+                                    <label class="md:hidden block text-[10px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Credits</label>
+                                    <input type="number" min="1" max="5" placeholder="3" 
+                                        class="credit-input w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all">
+                                </div>
+
+                                <div class="md:col-span-3 relative">
+                                    <label class="md:hidden block text-[10px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Grade</label>
+                                    <div class="relative">
+                                        <select class="grade-input w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none cursor-pointer transition-all">
+                                            <option value="" disabled selected>Select</option>
+                                            <option value="10">O (10)</option>
+                                            <option value="9">A+ (9)</option>
+                                            <option value="8">A (8)</option>
+                                            <option value="7">B+ (7)</option>
+                                            <option value="6">B (6)</option>
+                                            <option value="5">C (5)</option>
+                                            <option value="0">U/RA (0)</option>
+                                        </select>
+                                        <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="md:col-span-1 absolute md:static -top-2 -right-2 md:flex justify-center">
+                                    <button type="button" class="delete-btn bg-red-100 md:bg-transparent text-red-500 w-7 h-7 md:w-auto md:h-auto rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity md:opacity-100 hover:text-red-700 shadow-sm md:shadow-none">
+                                        <i class="fas fa-times md:fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button id="add-subject-btn" class="flex items-center gap-2 text-blue-600 font-bold text-sm hover:bg-blue-50 px-4 py-2.5 rounded-xl transition-colors active:scale-95 duration-200">
+                            <i class="fas fa-plus-circle text-lg"></i>
+                            Add Another Subject
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-8 bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-800 mb-1"><i class="fas fa-history text-indigo-500 mr-2"></i>Previous Semesters</h3>
+                    <p class="text-[11px] md:text-xs text-slate-500 mb-4">Add your past semesters to accurately calculate your overall CGPA.</p>
+                    
+                    <div class="hidden md:grid grid-cols-12 gap-4 px-2 mb-2">
+                        <div class="col-span-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Semester Name</div>
+                        <div class="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Total Credits</div>
+                        <div class="col-span-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Earned GPA</div>
+                        <div class="col-span-1"></div>
+                    </div>
+
+                    <div id="past-semesters-list" class="space-y-3">
+                        </div>
+
+                    <div class="pt-3">
+                        <button id="add-past-sem-btn" class="flex items-center gap-2 text-indigo-600 font-bold text-sm hover:bg-indigo-50 px-4 py-2.5 rounded-xl transition-colors active:scale-95 duration-200">
+                            <i class="fas fa-plus-circle text-lg"></i>
+                            Add Past Semester
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-8 md:mt-10 flex flex-col-reverse sm:flex-row gap-3 md:gap-4">
+                    <button id="reset-btn" class="w-full sm:w-1/3 bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold text-sm hover:bg-slate-200 transition-all active:scale-95">
+                        Reset Fields
+                    </button>
+                    <button id="calculate-btn" class="w-full sm:w-2/3 bg-slate-900 text-white py-4 rounded-2xl font-bold text-sm hover:bg-blue-600 shadow-xl shadow-slate-200 transition-all active:scale-95">
+                        Calculate Accurately
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentMode = 'self';
+        
+        // UI Navigation Functions
+        const selectionScreen = document.getElementById('selection-screen');
+        const calculatorScreen = document.getElementById('calculator-screen');
+        const calcTitle = document.getElementById('calc-title');
+
+        function startCalculator(mode) {
+            currentMode = mode;
+            
+            if(mode === 'self') {
+                calcTitle.textContent = "Your Performance";
+            } else {
+                calcTitle.textContent = "Friend's Performance";
+            }
+
+            selectionScreen.classList.add('hidden');
+            calculatorScreen.classList.remove('hidden');
+            
+            setTimeout(() => {
+                calculatorScreen.classList.remove('opacity-0');
+            }, 50);
+        }
+
+        function goBack() {
+            calculatorScreen.classList.add('opacity-0');
+            setTimeout(() => {
+                calculatorScreen.classList.add('hidden');
+                selectionScreen.classList.remove('hidden');
+                document.getElementById('reset-btn').click();
+            }, 300);
+        }
+
+        // Calculator Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const subjectsList = document.getElementById('subjects-list');
+            const pastSemestersList = document.getElementById('past-semesters-list');
+            
+            const addSubjectBtn = document.getElementById('add-subject-btn');
+            const addPastSemBtn = document.getElementById('add-past-sem-btn');
+            
+            const calculateBtn = document.getElementById('calculate-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            
+            const gpaResult = document.getElementById('gpa-result');
+            const cgpaResult = document.getElementById('cgpa-result');
+
+            // Templates
+            const subjectRowTemplate = subjectsList.children[0].outerHTML;
+            const pastSemRowTemplate = `
+                <div class="past-sem-row grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-4 items-center p-4 md:p-3 bg-white border border-slate-200 rounded-2xl md:rounded-xl shadow-sm hover:shadow-md transition-all relative group">
+                    <div class="md:col-span-6">
+                        <label class="md:hidden block text-[10px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Semester Name</label>
+                        <input type="text" placeholder="e.g. Semester 1" 
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 md:col-span-6 md:grid-cols-6 items-center">
+                        <div class="md:col-span-2">
+                            <label class="md:hidden block text-[10px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Total Credits</label>
+                            <input type="number" min="1" placeholder="e.g. 24" 
+                                class="past-credit-input w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="md:hidden block text-[10px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Earned GPA</label>
+                            <input type="number" step="0.01" min="0" max="10" placeholder="e.g. 8.50" 
+                                class="past-gpa-input w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+                        </div>
+                        <div class="md:col-span-1 absolute md:static -top-2 -right-2 md:flex justify-center">
+                            <button type="button" class="delete-btn bg-red-100 md:bg-transparent text-red-500 w-7 h-7 md:w-auto md:h-auto rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity md:opacity-100 hover:text-red-700 shadow-sm md:shadow-none">
+                                <i class="fas fa-times md:fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const calculateAll = () => {
+                // 1. Calculate Current Semester GPA
+                const currentRows = document.querySelectorAll('.subject-row');
+                let currentCredits = 0;
+                let currentPoints = 0;
+
+                currentRows.forEach(row => {
+                    const creditValue = parseFloat(row.querySelector('.credit-input').value);
+                    const gradeValue = parseFloat(row.querySelector('.grade-input').value);
+
+                    if (!isNaN(creditValue) && !isNaN(gradeValue)) {
+                        currentCredits += creditValue;
+                        currentPoints += (creditValue * gradeValue);
+                    }
+                });
+
+                const currentGPA = currentCredits > 0 ? (currentPoints / currentCredits) : 0;
+                gpaResult.textContent = currentCredits > 0 ? currentGPA.toFixed(2) : "0.00";
+
+                // 2. Calculate Overall CGPA including past semesters
+                const pastRows = document.querySelectorAll('.past-sem-row');
+                let pastCreditsTotal = 0;
+                let pastPointsTotal = 0;
+
+                pastRows.forEach(row => {
+                    const pCredit = parseFloat(row.querySelector('.past-credit-input').value);
+                    const pGPA = parseFloat(row.querySelector('.past-gpa-input').value);
+
+                    if (!isNaN(pCredit) && !isNaN(pGPA)) {
+                        pastCreditsTotal += pCredit;
+                        pastPointsTotal += (pCredit * pGPA);
+                    }
+                });
+
+                const totalCredits = currentCredits + pastCreditsTotal;
+                const totalPoints = currentPoints + pastPointsTotal;
+
+                if (totalCredits > 0) {
+                    const finalCGPA = totalPoints / totalCredits;
+                    cgpaResult.textContent = finalCGPA.toFixed(2);
+                } else {
+                    cgpaResult.textContent = "0.00";
+                }
+            };
+
+            // Add new current subject row
+            addSubjectBtn.addEventListener('click', () => {
+                subjectsList.insertAdjacentHTML('beforeend', subjectRowTemplate);
+                const newRow = subjectsList.lastElementChild;
+                newRow.querySelector('input[type="text"]').value = '';
+                newRow.querySelector('.credit-input').value = '';
+                newRow.querySelector('.grade-input').value = '';
+            });
+
+            // Add new past semester row
+            addPastSemBtn.addEventListener('click', () => {
+                pastSemestersList.insertAdjacentHTML('beforeend', pastSemRowTemplate);
+            });
+
+            // Handle deletions (for both lists using event delegation)
+            document.getElementById('calculator-screen').addEventListener('click', (e) => {
+                const deleteBtn = e.target.closest('.delete-btn');
+                if (deleteBtn) {
+                    const subjectRow = deleteBtn.closest('.subject-row');
+                    const pastSemRow = deleteBtn.closest('.past-sem-row');
+
+                    if (subjectRow) {
+                        const rows = document.querySelectorAll('.subject-row');
+                        if (rows.length > 1) {
+                            subjectRow.remove();
+                        } else {
+                            subjectRow.querySelector('input[type="text"]').value = '';
+                            subjectRow.querySelector('.credit-input').value = '';
+                            subjectRow.querySelector('.grade-input').value = '';
+                        }
+                    } else if (pastSemRow) {
+                        pastSemRow.remove();
+                    }
+                    calculateAll();
+                }
+            });
+
+            // Trigger Calculation
+            calculateBtn.addEventListener('click', calculateAll);
+
+            // Reset Form
+            resetBtn.addEventListener('click', () => {
+                // Reset subjects
+                subjectsList.innerHTML = subjectRowTemplate;
+                const firstRow = subjectsList.firstElementChild;
+                firstRow.querySelector('input[type="text"]').value = '';
+                firstRow.querySelector('.credit-input').value = '';
+                firstRow.querySelector('.grade-input').value = '';
+                
+                // Clear past semesters entirely
+                pastSemestersList.innerHTML = '';
+                
+                // Reset displays
+                gpaResult.textContent = "0.00";
+                cgpaResult.textContent = "0.00";
+            });
+        });
+    </script>
+</body>
+</html>

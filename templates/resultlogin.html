@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADHI Result Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f1f5f9;
+            background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%), 
+                              radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans text-slate-900 flex flex-col items-center justify-center p-4 md:p-8">
+
+    <div class="w-full max-w-6xl">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-black text-slate-800 tracking-tight">Examination Portal</h1>
+            <p class="text-slate-500 font-medium mt-2">Access semester results and institutional reports</p>
+        </div>
+
+        <!-- Portals Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Student Portal -->
+            <div class="glass p-6 md:p-10 rounded-[2.5rem] shadow-xl transition-all duration-300 hover:shadow-2xl">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="bg-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
+                        <i class="fas fa-user-graduate text-white text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">Student Portal</h2>
+                </div>
+
+                {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl shadow-sm">
+      {% for message in messages %}
+        <p class="text-sm font-bold text-red-700 flex items-center gap-2">
+            <i class="fas fa-exclamation-circle"></i> {{ message }}
+        </p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+                <form action="/resultverify/input" method="POST" class="space-y-5">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-2 tracking-widest">Register Number</label>
+                        <input type="text" name="reg_id" required placeholder="e.g. 210421104001"
+                            class="w-full bg-white/50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-2 tracking-widest">Date of Birth</label>
+                        <input type="text" name="dob" required placeholder="DD-MM-YYYY"
+                            class="w-full bg-white/50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all">
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Security Verification</label>
+                        <div class="flex flex-col sm:flex-row gap-4 items-center">
+                            <div class="bg-white p-2 rounded-xl border border-slate-200 shrink-0">
+                                <img src="/captcha-image" alt="Captcha" class="h-10 w-32 object-contain bg-slate-100 rounded-lg">
+                            </div>
+                            <input type="text" name="input" placeholder="Enter Code" required
+                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-sm hover:bg-blue-700 shadow-xl shadow-slate-200 transition-all active:scale-[0.98]">
+                        Check Result
+                    </button>
+                </form>
+            </div>
+
+            <!-- Institution Portal -->
+            <div class="glass p-6 md:p-10 rounded-[2.5rem] shadow-xl border-t-8 transition-all duration-300 hover:shadow-2xl">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="bg-violet-600 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-200">
+                        <i class="fas fa-university text-white text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">Institution Portal</h2>
+                </div>
+
+                <form action="/view-results" method="POST" class="space-y-5">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-2 tracking-widest">Institution / Staff Code</label>
+                        <input type="text" name="staff-code" required placeholder="Enter Code"
+                            class="w-full bg-white/50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-2 tracking-widest">Password</label>
+                        <input type="password" name="password" required placeholder="••••••••"
+                            class="w-full bg-white/50 border border-slate-200 rounded-2xl px-5 py-3.5 text-sm focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all">
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Security Verification</label>
+                        <div class="flex flex-col sm:flex-row gap-4 items-center">
+                            <div class="bg-white p-2 rounded-xl border border-slate-200 shrink-0">
+                                <img src="/resultverify/captcha-image" alt="Captcha" class="h-10 w-32 object-contain bg-slate-100 rounded-lg">
+                            </div>
+                            <input type="text" name="input" placeholder="Enter Code" required
+                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-violet-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button type="button" class="text-xs font-bold text-violet-600 hover:text-violet-800 py-2">Forgot Password?</button>
+                        <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-sm hover:bg-violet-700 shadow-xl shadow-slate-200 transition-all active:scale-[0.98]">
+                            Staff Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <p class="text-center text-slate-400 text-[10px] mt-12 font-medium uppercase tracking-[0.2em]">
+            &copy; 2026 Adhi College of Engineering & Technology | Office of Controller of Examinations
+        </p>
+    </div>
+
+</body>
+</html>

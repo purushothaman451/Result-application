@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col font-sans text-slate-900">
+    
+    <nav class="bg-white border-b sticky top-0 z-50 px-4 md:px-6 py-3 flex justify-between items-center shadow-sm w-full">
+        <div class="flex items-center gap-3 md:gap-4">
+            <div class="bg-blue-600 h-10 w-10 md:h-12 md:w-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 shadow-inner p-1.5">
+                <img src="/static/img/adhi.logo.png" alt="university logo" class="max-h-full max-w-full object-contain">
+            </div>
+            <div class="flex flex-col justify-center">
+                <span class="text-[15px] md:text-xl font-extrabold tracking-tight text-blue-900 leading-none">ADHI STUDENT HUB</span>
+                <span class="text-[10px] md:text-xs text-slate-500 font-bold uppercase mt-0.5 tracking-wider">Portal v3.0</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 md:gap-3">
+            <a href="/" class="hidden sm:block bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all active:scale-95">Home</a>
+            <a href="/logout" class="bg-slate-900 text-white px-4 py-2 md:px-5 md:py-2 rounded-xl font-bold text-sm hover:bg-red-600 shadow-md transition-all active:scale-95">Logout</a>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex items-center justify-center p-4 md:p-8 w-full">
+        
+        <div class="w-full max-w-3xl bg-white/90 backdrop-blur-xl p-5 sm:p-8 md:p-10 rounded-[2rem] shadow-2xl border border-slate-100">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 md:mb-10">
+                <div class="flex items-center gap-4 md:gap-5">
+                    <div class="bg-blue-600 w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200/50 shrink-0">
+                        <i class="fas fa-calculator text-white text-2xl md:text-3xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">GPA Calculator</h2>
+                    </div>
+                </div>
+                
+                <div class="w-full sm:w-auto bg-blue-50/80 border border-blue-100 px-6 py-4 rounded-2xl text-center shadow-inner flex flex-col justify-center">
+                    <span class="block text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Projected GPA</span>
+                    <span class="text-4xl md:text-5xl font-black text-blue-600 leading-none">0.00</span>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                
+                <div class="hidden md:grid grid-cols-12 gap-4 px-2 mb-2">
+                    <div class="col-span-7 text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Subject Name</div>
+                    <div class="col-span-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Credits</div>
+                    <div class="col-span-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Expected Grade</div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-4 items-center p-4 md:p-3 bg-slate-50 border border-slate-100 rounded-2xl md:rounded-xl hover:bg-slate-100 transition-colors">
+                    
+                    <div class="md:col-span-7">
+                        <label class="md:hidden block text-[10px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Subject Name</label>
+                        <input type="text" placeholder="e.g. Data Structures" 
+                            class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-300">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 md:col-span-5 md:grid-cols-5">
+                        
+                        <div class="md:col-span-2">
+                            <label class="md:hidden block text-[10px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Credits</label>
+                            <input type="number" placeholder="2" 
+                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all">
+                        </div>
+
+                        <div class="md:col-span-3 relative">
+                            <label class="md:hidden block text-[10px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Grade</label>
+                            <div class="relative">
+                                <select class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none cursor-pointer transition-all">
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="10">O (10)</option>
+                                    <option value="9">A+ (9)</option>
+                                    <option value="8">A (8)</option>
+                                    <option value="7">B+ (7)</option>
+                                    <option value="0">F (0)</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button class="flex items-center gap-2 text-blue-600 font-bold text-sm hover:bg-blue-50 px-4 py-2.5 rounded-xl transition-colors active:scale-95 duration-200">
+                        <i class="fas fa-plus-circle text-lg"></i>
+                        Add Another Subject
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-8 md:mt-10 flex flex-col-reverse sm:flex-row gap-3 md:gap-4">
+                <button class="w-full sm:w-1/3 bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold text-sm hover:bg-slate-200 transition-all active:scale-95">
+                    Reset Fields
+                </button>
+                <button class="w-full sm:w-2/3 bg-slate-900 text-white py-4 rounded-2xl font-bold text-sm hover:bg-blue-600 shadow-xl shadow-slate-200 transition-all active:scale-95">
+                    Calculate GPA
+                </button>
+            </div>
+
+            <div class="mt-6 md:mt-8 p-4 md:p-5 bg-amber-50 rounded-2xl border border-amber-100 flex items-start gap-3 md:gap-4">
+                <div class="bg-amber-100 p-2 rounded-lg shrink-0 text-amber-500">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <p class="text-[11px] md:text-sm text-amber-800 leading-relaxed pt-0.5">
+                    <strong>Pro Tip:</strong> Enter your targeted grades to see what's required to reach a <span class="font-bold text-amber-700">9.0 CGPA</span>. This calculator follows the latest ADHI relative grading norms.
+                </p>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

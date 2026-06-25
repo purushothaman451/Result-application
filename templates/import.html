@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Student Data</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex items-center justify-center p-6">
+
+    <div class="bg-white p-8 rounded-xl shadow-md max-w-md w-full">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+            Upload Excel or CSV File
+        </h2>
+        
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="mb-4">
+              {% for message in messages %}
+                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-3 rounded text-sm mb-2" role="alert">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-5">
+            <div>
+                <label for="file" class="block text-sm font-medium text-gray-700 mb-2">
+                    Select Excel/CSV File:
+                </label>
+                <input type="file" id="file" name="file" accept=".csv, .xlsx, .xls" required
+                    class="block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-indigo-50 file:text-indigo-700
+                    hover:file:bg-indigo-100
+                    border border-gray-300 rounded-lg p-2 bg-gray-50 cursor-pointer focus:outline-none">
+            </div>
+            
+            <button type="submit" 
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200 shadow-sm">
+                Upload and Import
+            </button>
+        </form>
+        
+        <div class="mt-6 border-t border-gray-200 pt-4 text-center">
+            <a href="{{ url_for('admin_dashboard') }}" 
+               class="text-sm text-indigo-600 hover:text-indigo-800 font-medium inline-flex items-center gap-1">
+                ← Back to Admin Panel
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,308 @@
+from flask import Flask, render_template, request, redirect, url_for, flash,session,jsonify,send_file
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+import os
+import pandas as pd
+import webbrowser 
+from threading import Timer
+from captcha.image import ImageCaptcha
+import random
+import string
+import io
+from functools import wraps
+
+ 
+app = Flask('_name_')
+app.config['SECRET_KEY'] = 'pro_secret_key_99'
+
+raw_db_url = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = raw_db_url.replace("postgres://", "postgresql://", 1) if raw_db_url else 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(50))
+
+class student_user(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    reg_id = db.Column(db.BigInteger, unique=True)
+    dob = db.Column(db.String(30))
+    name = db.Column(db.String(50))
+    semester = db.Column(db.Integer)
+    year = db.Column(db.String(30))
+    institute = db.Column(db.String(80)) 
+    results = db.relationship('Exam_result', backref='student',lazy=True)
+
+class Exam_result(db.Model):
+    id =db.Column(db.Integer, primary_key=True)
+    grade = db.Column(db.String(10))
+    result_status = db.Column(db.String(10))
+    student_reg_id = db.Column(db.BigInteger, db.ForeignKey('student_user.reg_id'))
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User,int(user_id))
+
+with app.app_context():
+    db.create_all() 
+    # Create the initial master admin securely if they don't exist
+    if not User.query.filter_by(username='arun').first():
+        hashed_user = generate_password_hash('arun',method='pbkdf2:sha256')
+        hashed_pw = generate_password_hash('arun123', method='pbkdf2:sha256')
+        db.session.add(User(username=hashed_user, password=hashed_pw))
+        db.session.commit()
+    #second admin
+    if not User.query.filter_by(username='test').first():
+        hashed_user1 = generate_password_hash('test',method='pbkdf2:sha256')
+        hashed_pw = generate_password_hash('test123', method='pbkdf2:sha256')
+        db.session.add(User(username=hashed_user1, password=hashed_pw))
+        db.session.commit()
+
+   
+        
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/gpa')
+def gpa():
+    return render_template('gpacalculator.html')
+
+@app.route('/resultlogin')
+def resultlogin():
+    return render_template('resultlogin.html')
+
+@app.route('/timetable')
+def time_table():
+    return render_template('timetable.html')
+
+@app.route('/upcomingevents')
+def upcomingevents():
+    return render_template('events.html')
+
+@app.route('/internals')
+def internals():
+    return render_template('Internals.html')
+
+@app.route('/result')
+def result():
+    return render_template('result.html')
+
+#captcha generation
+image_captcha = ImageCaptcha(width=200,height=90)
+def generate_random_string(length=6):
+    """Generates a random alphanumeric string."""
+    letters = string.ascii_letters + string.digits
+    return ''.join(random.choice(letters) for i in range(length))
+
+@app.route('/captcha-image', methods=['GET'])
+def get_captcha():
+    captcha_text = generate_random_string(6)
+    session['captcha'] = captcha_text.upper() # Store uppercase for case-insensitive check
+    data = image_captcha.generate(captcha_text)
+    
+    return send_file(
+        io.BytesIO(data.read()),
+        mimetype='image/png',
+        download_name='captcha.png'
+    )
+
+
+#verification of student captcha and login
+@app.route('/resultverify/input', methods=['GET','POST'])
+def verify_login():
+    """Handles the standard user/student login from the frontend with CAPTCHA."""
+    
+    username = request.form.get('reg_id', '').strip()
+    password = request.form.get('dob', '').strip()
+    user_captcha_input = request.form.get('input', '').strip()
+
+    # 1. CAPTCHA Verification
+    stored_captcha = session.get('captcha')
+    session.pop('captcha', None) # Clear immediately to prevent reuse
+
+    if not stored_captcha:
+        flash("CAPTCHA expired. Please refresh the page.")
+        return redirect(url_for('result'))
+    
+    if user_captcha_input.upper() != stored_captcha:
+        flash("Invalid CAPTCHA. Try again.")
+        return redirect(url_for('result'))
+
+    # 2. Database Verification (Using SQLAlchemy)
+    user = User.query.filter_by(username=username).first()
+    
+    if check_password_hash(user.username,) and check_password_hash(user.password, password):
+        # SUCCESS! Log them in
+        flash("Invalid userid or password")
+        login_user(user)
+        return redirect(url_for('result'))
+    else:
+        flash("Invalid Register Number or Date of Birth.")
+        return redirect(url_for('result'))
+
+
+@app.route('/admin', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        user = User.query.filter_by(username=request.form.get('username')).first()
+        # Securely verify the password hash
+        if check_password_hash(user, request.form.get('username')) and check_password_hash(user.password, request.form.get('password')):
+            login_user(user)
+            return redirect(url_for('admin_dashboard'))
+        
+        flash('Invalid Credentials')
+    return render_template('adminlogin.html')
+
+@app.route('/admin/dashboard')
+@login_required
+def admin_dashboard():
+    return render_template('admin.html')
+
+@app.route('/admin/import_users', methods=['GET', 'POST'])
+@login_required  # Secure this so only logged-in admins can upload files
+def import_users():
+    if request.method == 'POST':
+        # 1. Check if a file was actually uploaded
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+            
+        file = request.files['file']
+        
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+
+        if file:
+            try:
+                # 2. Read the file using Pandas (handles both CSV and Excel)
+                if file.filename.endswith('.csv'):
+                    df = pd.read_csv(file)
+                elif file.filename.endswith(('.xls', '.xlsx')):
+                    df = pd.read_excel(file)
+                else:
+                    flash('Invalid file format. Please upload a CSV or Excel file.')
+                    return redirect(request.url)
+
+                df.columns = df.columns.str.strip()
+                # 3. Loop through each row of the file and add to the database
+                for index, row in df.iterrows():
+                    username1 = str(row['reg_id']).strip()
+                    plain_password = str(row['dob']).strip()
+                    student_name = str(row['name']).strip()
+                    student_sem = str(row['semester']).strip()
+                    s_year = str(row['year']).strip()
+                    s_institute = str(row['institute']).strip()
+
+                    
+                    # Optional: Grab student info if you have columns for them
+                    # location = str(row['location']).strip() if 'location' in row else None
+
+                    # Check if the user already exists to avoid duplicates
+                    existing_user = student_user.query.filter_by(reg_id=username1).first()
+                    if not existing_user:
+                        # Hash the password securely before saving
+                        hashed_username1 = generate_password_hash(username1, method='pbkdf2:sha256')
+                        hashed_dob = generate_password_hash(plain_password, method='pbkdf2:sha256')
+                        hashed_student_name = generate_password_hash(student_name, method='pbkdf2:sha256')
+                        hashed_student_sem = generate_password_hash(student_sem, method='pbkdf2:sha256')
+                        hashed_s_year = generate_password_hash(s_year,method='pbkdf2:sha256')
+                        hashed_s_institute = generate_password_hash(s_institute, method='pbkdf2:sha256')
+                        
+                        # Create new user (The ID is auto-assigned by the database)
+                        new_user = student_user(reg_id=hashed_username1, dob=hashed_dob, name=hashed_student_name, semester=hashed_student_sem, year=hashed_s_year, institute=hashed_s_institute)
+                        db.session.add(new_user)
+
+                # Save everything to the database at once
+                db.session.commit()
+                flash('File imported and users added successfully!')
+                return redirect(url_for('admin_dashboard'))
+
+            except Exception as e:
+                db.session.rollback()  # Undo changes if an error happens
+                flash(f'An error occurred during import: {str(e)}')
+                return redirect(request.url)
+
+    return render_template('import.html')
+
+#upload results
+@app.route('/admin/import_results', methods=['GET', 'POST'])
+@login_required  # Secure this so only logged-in admins can upload files
+def import_results():
+    if request.method == 'POST':
+        # 1. Check if a file was actually uploaded
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+            
+        file = request.files['file']
+        
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+
+        if file:
+            try:
+                # 2. Read the file using Pandas (handles both CSV and Excel)
+                if file.filename.endswith('.csv'):
+                    df = pd.read_csv(file)
+                elif file.filename.endswith(('.xls', '.xlsx')):
+                    df = pd.read_excel(file)
+                else:
+                    flash('Invalid file format. Please upload a CSV or Excel file.')
+                    return redirect(request.url)
+
+                df.columns = df.columns.str.strip()
+                # 3. Loop through each row of the file and add to the database
+                for index, row in df.iterrows():
+                    s_reg_id = str(row['reg_id']).strip()
+                    s_result = str(row['result_status']).strip()
+                    s_grade = str(row['grade']).strip()
+
+
+                   # 2. Check if the student actually exists in the database first
+                    student = student_user.query.filter_by(reg_id=s_reg_id).first()
+                    
+                    if student:
+                        # 3. Create the result and link it using the Foreign Key (student_reg_id)
+                        hashed_s_reg_id =generate_password_hash(s_reg_id,method='pbkdf2:sha256')
+                        hashed_s_result =generate_password_hash(s_result,method='pbkdf2:sha256')
+                        hashed_s_grade =generate_password_hash(s_grade,method='pbkdf2:sha256')
+
+                        new_result = Exam_result(
+                            grade=hashed_s_grade, 
+                            result_status=hashed_s_result,
+                            student_reg_id= hashed_s_reg_id#student.reg_id # <-- The magic link!
+
+                        )
+                        db.session.add(new_result)
+                    else:
+                        # Optional: Print or log that a result was skipped because the student doesn't exist
+                        print(f"Skipped: Student {s_reg_id} not found in database.")
+
+                db.session.commit()
+                flash('File imported and results added successfully!')
+                return redirect(url_for('admin_dashboard'))
+
+            except Exception as e:
+                db.session.rollback()  
+                flash(f'An error occurred during import: {str(e)}')
+                return redirect(request.url)
+
+    return render_template('import.html')
+
+def open_browser():
+    webbrowser.open_new('http://127.0.0.1:5000/')
+
+if __name__ == '__main__':
+    Timer(1,open_browser).start()
+    app.run(debug=True)
