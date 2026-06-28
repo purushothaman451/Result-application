@@ -25,45 +25,51 @@
         </div>
     </nav>
 
-    <main class="flex-1 p-6 md:p-10 max-w-6xl mx-auto w-full">
+   <main class="flex-1 p-6 md:p-10 max-w-6xl mx-auto w-full">
         
         <h2 class="text-3xl font-bold mb-6 text-gray-900">Student Academic Dashboard</h2>
 
         <div class="bg-white p-6 rounded-lg mb-8 shadow-sm border border-slate-200">
             <h3 class="text-xl font-semibold mb-4 border-b border-slate-200 pb-2">Student Profile</h3>
-            <p class="my-2 text-slate-600"><strong class="text-slate-900">Register Number:</strong> {{ student.regno }}</p>
+            <p class="my-2 text-slate-600"><strong class="text-slate-900">Register Number:</strong> {{ student.reg_id }}</p>
             <p class="my-2 text-slate-600"><strong class="text-slate-900">Date of Birth:</strong> {{ student.dob }}</p>
             <p class="my-2 text-slate-600"><strong class="text-slate-900">Department:</strong> {{ student.dept }}</p>
-            <p class="my-2 text-slate-600"><strong class="text-slate-900">Institution:</strong> {{ student.institution }}</p>
+            <p class="my-2 text-slate-600"><strong class="text-slate-900">Institution:</strong> {{ student.institute }}</p>
             <p class="my-2 text-slate-600"><strong class="text-slate-900">Year:</strong> {{ student.year }} <span class="mx-2 text-slate-300">|</span> <strong class="text-slate-900">Semester:</strong> {{ student.semester }}</p>
         </div>
 
-        <h3 class="text-2xl font-semibold mb-4 text-gray-900">Exam Results</h3>
+        <h3 class="text-2xl font-semibold mb-4 text-gray-900">Fall 2025 Exam Results</h3>
         
-        <div class="overflow-x-auto shadow-sm rounded-lg border border-slate-200">
-            <table class="w-full border-collapse bg-white text-left text-slate-700">
-                <thead class="bg-blue-600 text-white">
-                    <tr>
-                        <th class="border-b border-blue-700 p-4 font-semibold">Semester</th>
-                        <th class="border-b border-blue-700 p-4 font-semibold">Subject Code</th>
-                        <th class="border-b border-blue-700 p-4 font-semibold">Grade</th>
-                        <th class="border-b border-blue-700 p-4 font-semibold">Result Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for result in exam_results %}
-                    <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-none">
-                        <td class="p-4">{{ result.semester }}</td>
-                        <td class="p-4">{{ result.subject_code }}</td>
-                        <td class="p-4">{{ result.grade }}</td>
-                        <td class="p-4 {% if result.status == 'PASS' %}text-emerald-600 font-bold{% else %}text-red-600 font-bold{% endif %}">
-                            {{ result.status }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        {% if exam_results %}
+            <div class="overflow-x-auto shadow-sm rounded-lg border border-slate-200">
+                <table class="w-full border-collapse bg-white text-left text-slate-700">
+                    <thead class="bg-blue-600 text-white">
+                        <tr>
+                            <th class="border-b border-blue-700 p-4 font-semibold">Semester</th>
+                            <th class="border-b border-blue-700 p-4 font-semibold">Subject Code</th>
+                            <th class="border-b border-blue-700 p-4 font-semibold">Grade</th>
+                            <th class="border-b border-blue-700 p-4 font-semibold">Result Status</th>
+                        </tr>
+                    </thead>
+                   <tbody>
+                        {% for result in exam_results %}
+                        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-none">
+                            <td class="p-4">{{ student.semester }}</td>
+                            <td class="p-4">{{ result.subject_code }}</td>
+                            <td class="p-4">{{ result.grade }}</td>
+                            <td class="p-4 {% if result.result_status|upper == 'PASS' %}text-emerald-600 font-bold{% else %}text-red-600 font-bold{% endif %}">
+                                {{ result.result_status }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 text-center">
+                <p class="text-slate-600 text-lg">No exam results found for Fall 2025.</p>
+            </div>
+        {% endif %}
 
         <div class="mt-8">
             <a href="/resultlogin" class="text-blue-600 hover:text-blue-800 hover:underline font-medium flex items-center gap-1 w-fit">
