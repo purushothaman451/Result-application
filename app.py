@@ -48,6 +48,7 @@ class Student_user(UserMixin, db.Model):
     year = db.Column(db.String(100))
     institute = db.Column(db.String(100))
     dept = db.Column(db.String(100))
+    results = db.relationship("Exam_result", back_populates='student')
 
 class Staff(UserMixin,db.Model):
     staff_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -84,7 +85,7 @@ class Exam_result(db.Model):
     exam_period = db.Column(db.String(20))
     
     # Relationships
-    student = db.relationship('Student_user', foreign_keys=[reg_id], backref='results')
+    student = db.relationship('Student_user', foreign_keys=[reg_id], back_populates='results')
     subject_details = db.relationship('Staff', foreign_keys=[subject_code], backref='exam_results')
 
 # ==========================================
@@ -119,6 +120,10 @@ def home():
 def resultlogin():
     return render_template('resultlogin.html')
 
+@app.route('/gpa')
+def gpa():
+    return render_template('gpacalculator.html')
+
 @app.route('/result')
 def result():
     # 1. Ensure the user is actually logged in
@@ -131,7 +136,10 @@ def result():
     
     # 3. Fetch the Student profile
     student = Student_user.query.filter_by(reg_id=current_student_reg_id).first()
-    
+    result_new = Exam_result.query.all()
+
+
+
     # 4. Fetch all results linked to this student AND matching 2025
     results = db.session.query(
         Exam_result.subject_code,
@@ -147,7 +155,7 @@ def result():
     ).all()
 
     # 5. Send both the student profile and the results to the HTML template
-    return render_template('result.html', student=student, results=results)
+    return render_template('result.html', student=student, results=results,result_new=result_new)
 
 # --- CAPTCHA & STUDENT LOGIN ---
 image_captcha = ImageCaptcha(width=200, height=90)
@@ -225,7 +233,7 @@ def admin_dashboard():
 def logout():
     logout_user()
     flash('You have been safely logged out.')
-    return redirect(url_for('login'))
+    return render_template('index.html')
 
 # ==========================================
 # IMPORT LOGIC
