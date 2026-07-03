@@ -44,7 +44,6 @@ class Student_user(UserMixin, db.Model):
     reg_id = db.Column(db.String(100), unique=True, nullable=False) 
     dob = db.Column(db.String(100))
     name = db.Column(db.String(100))
-    semester = db.Column(db.String(100))
     year = db.Column(db.String(100))
     institute = db.Column(db.String(100))
     dept = db.Column(db.String(100))
@@ -59,6 +58,7 @@ class Staff(UserMixin,db.Model):
     subject_code = db.Column(db.String(100), unique=True, nullable=False) # Must be unique to act as a target for FK
     grade_handled = db.Column(db.String(3)) 
     password = db.Column(db.String(100))
+    semester = db.Column(db.String(100))
     student = db.relationship('Student_user', foreign_keys=[reg_id], backref='assigned_staff')
 
 
@@ -72,6 +72,7 @@ class Subject(db.Model):
     subject_name = db.Column(db.String(100))
     staff_name = db.Column(db.String(100))
     
+    
     # Relationships
     student = db.relationship('Student_user', foreign_keys=[reg_id], backref='subjects_enrolled')
     staff = db.relationship('Staff', foreign_keys=[subject_code], backref='students_enrolled')
@@ -79,6 +80,7 @@ class Subject(db.Model):
 class Exam_result(db.Model):
     result_id = db.Column(db.Integer, primary_key=True)
     reg_id = db.Column(db.String(100), db.ForeignKey('student_user.reg_id'), nullable=False)
+    semester = db.Column(db.String(100), db.ForeignKey('staff.semester'), nullable=False)
     subject_code = db.Column(db.String(100), db.ForeignKey('staff.subject_code'), nullable=False)
     grade = db.Column(db.String(10),db.ForeignKey('staff.grade_handled'), nullable=False)
     result_status = db.Column(db.String(100))
@@ -144,6 +146,7 @@ def result():
     results = db.session.query(
         Exam_result.subject_code,
         Staff.subject_name,
+        Staff.semester,
         Exam_result.grade,
         Exam_result.result_status,
         Exam_result.exam_period
@@ -265,8 +268,7 @@ def import_users():
                     new_user = Student_user(
                         reg_id=raw_reg_id, 
                         dob=str(row['dob']).strip(), 
-                        name=str(row['name']).strip(), 
-                        semester=str(row.get('semester', '')).strip(), 
+                        name=str(row['name']).strip(),  
                         year=str(row.get('year', '')).strip(), 
                         institute=str(row.get('institute', '')).strip(),
                         dept = str(row.get('dept','')).strip()
@@ -313,6 +315,7 @@ def import_results():
                 
             for index, row in df.iterrows():
                 raw_reg_id = str(row['reg_id']).strip()
+                semester=str(row.get('semester', '')).strip()
                 raw_subj_code = str(row['subject_code']).strip()
                 s_result = str(row['result']).strip()
                 s_grade = str(row['grade']).strip()
@@ -323,7 +326,8 @@ def import_results():
                 
                 # Automatically build the connections if both Student and Staff exist
                 if student and staff:
-                    
+                    # 2. Automatically pull the semester from the Staff database record
+                    staff_semester = staff.semester
                     # 1. Check/Create the "Hidden" Subject Linking Table mapping
                     subject_link = Subject.query.filter_by(reg_id=student.reg_id, subject_code=staff.subject_code).first()
                     if not subject_link:
@@ -341,7 +345,8 @@ def import_results():
                         subject_code=staff.subject_code,
                         grade=s_grade, 
                         result_status=s_result,
-                        exam_period=s_exam
+                        exam_period=s_exam,
+                        semester=staff_semester
                     )
                     db.session.add(new_result)
                 else:
@@ -402,6 +407,7 @@ def import_staff():
                         subject_code=raw_subj_code,
                         grade_handled=str(row.get('grade_handled', '')).strip(),
                         password=str(row['password']).strip(),
+                        semester=str(row.get('semester', '')).strip(),
                         reg_id=raw_reg_id  # NEW: Pushing the reg_id to the database
                     )
                     db.session.add(new_staff)

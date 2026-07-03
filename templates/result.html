@@ -43,7 +43,7 @@
             <div class="overflow-x-auto shadow-sm rounded-lg border border-slate-200 flex flex-col gap-8">
                 
                 <div>
-                    <h3 class="p-4 text-lg font-bold text-slate-800 bg-slate-50 border-b border-slate-200">Fall 2025 Results</h3>
+                    <h3 class="p-4 text-lg font-bold text-slate-800 bg-slate-50 border-b border-slate-200">May-June 2025 Results</h3>
                     <table class="w-full border-collapse bg-white text-left text-slate-700">
                         <thead class="bg-blue-600 text-white">
                             <tr>
@@ -56,7 +56,7 @@
                         <tbody>
                             {% for result in results %}
                             <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-none">
-                                <td class="p-4">{{ student.semester }}</td>
+                                <td class="p-4">{{ result.semester }}</td>
                                 <td class="p-4">{{ result.subject_code }}</td>
                                 <td class="p-4">{{ result.grade }}</td>
                                 <td class="p-4 {% if result.result_status|upper == 'PASS' %}text-emerald-600 font-bold{% else %}text-red-600 font-bold{% endif %}">
@@ -67,9 +67,10 @@
                         </tbody>
                     </table>
                 </div>
-
+ {% for result in result_new %}
+ {% if result.exam_period == 'NOV-DEC2025' and result.reg_id == student.reg_id %}
                 <div>
-                    <h3 class="p-4 text-lg font-bold text-slate-800 bg-slate-50 border-t border-b border-slate-200">May-June 2025 Results</h3>
+                    <h3 class="p-4 text-lg font-bold text-slate-800 bg-slate-50 border-t border-b border-slate-200">November-December 2025 Results</h3>
                     <table class="w-full border-collapse bg-white text-left text-slate-700">
                         <thead class="bg-blue-600 text-white">
                             <tr>
@@ -80,23 +81,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for result in result_new %}
-                                {% if result.exam_period == 'MAY-JUN2025' and result.reg_id == student.reg_id %}
+                           
+                               
                                 <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-none">
-                                    <td class="p-4">{{ student.semester }}</td>
+                                    <td class="p-4">{{ result.semester }}</td>
                                     <td class="p-4">{{ result.subject_code }}</td>
                                     <td class="p-4">{{ result.grade }}</td>
                                     <td class="p-4 {% if result.result_status|upper == 'PASS' %}text-emerald-600 font-bold{% else %}text-red-600 font-bold{% endif %}">
                                         {{ result.result_status }}
                                     </td>
                                 </tr>
-                                {% endif %}
-                            {% endfor %}
+                               
+                           
                         </tbody>
                     </table>
                 </div>
 
             </div>
+             {% endif %}
+              {% endfor %}
         {% else %}
             <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 text-center">
                 <p class="text-slate-600 text-lg">No exam results found.</p>
