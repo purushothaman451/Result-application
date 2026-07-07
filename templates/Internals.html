@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anna Univ GPA & CGPA Calculator</title>
+    <title>Academic Performance - Adhi Student Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col font-sans text-slate-900">
     
+    <!-- Navigation -->
     <nav class="bg-white border-b sticky top-0 z-50 px-4 md:px-6 py-3 flex justify-between items-center shadow-sm w-full">
         <div class="flex items-center gap-3 md:gap-4">
             <div class="bg-blue-600 h-10 w-10 md:h-12 md:w-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 shadow-inner p-1.5">
@@ -21,6 +22,141 @@
         </div>
         <div class="flex items-center gap-2 md:gap-3">
             <a href="/" class="hidden sm:block bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all active:scale-95">Home</a>
-            <a href="/logout" class="bg-slate-900 text-white px-4 py-2 md:px-5 md:py-2 rounded-xl font-bold text-sm hover:bg-red-600 shadow-md transition-all active:scale-95">Logout</a>
+            <a href="{{ url_for('logout') }}" class="bg-slate-900 text-white px-4 py-2 md:px-5 md:py-2 rounded-xl font-bold text-sm hover:bg-red-600 shadow-md transition-all active:scale-95">Logout</a>
         </div>
     </nav>
+
+    <main class="flex-grow w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8">
+        
+        <!-- Page Header -->
+        <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">Academic Performance</h2>
+        </div>
+
+        <!-- Student Info Card -->
+        <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="flex flex-col border-b md:border-b-0 md:border-r border-slate-100 pb-4 md:pb-0">
+                <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 flex items-center gap-2"><i class="fa-regular fa-id-badge"></i> Name</span>
+                <span class="text-lg md:text-xl font-extrabold text-slate-800">{{ student.name }}</span>
+            </div>
+            <div class="flex flex-col border-b md:border-b-0 md:border-r border-slate-100 pb-4 md:pb-0">
+                <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 flex items-center gap-2"><i class="fa-solid fa-hashtag"></i> Register Number</span>
+                <span class="text-lg md:text-xl font-extrabold text-slate-800">{{ student.reg_id }}</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 flex items-center gap-2"><i class="fa-solid fa-building-columns"></i> Department</span>
+                <span class="text-lg md:text-xl font-extrabold text-slate-800">{{ student.dept }}</span>
+            </div>
+        </div>
+
+        <!-- Split Screen Container for Tables -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-8 mb-8">
+            
+            <!-- LEFT COLUMN: Internals -->
+            <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-4 pl-1">
+                    <div class="bg-indigo-100 text-indigo-600 p-2 rounded-lg">
+                        <i class="fa-solid fa-file-alt text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Internal Marks</h3>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex-grow">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead class="bg-slate-100 border-b border-slate-200 text-slate-700">
+                                <tr>
+                                    <th class="p-4 font-bold uppercase text-xs tracking-wider">Subject</th>
+                                    <th class="p-4 font-bold uppercase text-xs tracking-wider">Type</th>
+                                    <th class="p-4 font-bold uppercase text-xs tracking-wider text-right">Marks</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                {% for record in records %}
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="p-4">
+                                        <div class="font-bold text-slate-800">{{ record.subject_code }}</div>
+                                        <div class="text-sm text-slate-500 truncate max-w-[200px]" title="{{ record.subject_name }}">{{ record.subject_name }}</div>
+                                    </td>
+                                    <td class="p-4 text-slate-600 font-medium">{{ record.internals | default('-', true) }}</td>
+                                    <td class="p-4 text-right">
+                                        <span class="bg-indigo-50 text-indigo-700 py-1.5 px-3 rounded-xl font-extrabold">
+                                            {{ record.marks | default('-', true) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="p-10 text-center text-slate-400 font-medium">
+                                        <div class="flex flex-col items-center justify-center gap-3">
+                                            <i class="fa-solid fa-folder-open text-3xl mb-1 text-slate-300"></i>
+                                            <p>No internal marks found.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Semester Results -->
+            <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-4 pl-1">
+                    <div class="bg-emerald-100 text-emerald-600 p-2 rounded-lg">
+                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Semester Results</h3>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex-grow">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead class="bg-slate-100 border-b border-slate-200 text-slate-700">
+                                <tr>
+                                    <th class="p-4 font-bold uppercase text-xs tracking-wider">Subject</th>
+                                    <th class="p-4 font-bold uppercase text-xs tracking-wider text-center">Sem</th>
+                                    <th class="p-4 font-bold uppercase text-xs tracking-wider text-right">Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <!-- Example Jinja Loop for Semester Results -->
+                                {% for result in semester_results %}
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="p-4">
+                                        <div class="font-bold text-slate-800">{{ result.subject_code }}</div>
+                                        <div class="text-sm text-slate-500 truncate max-w-[200px]" title="{{ result.subject_name }}">{{ result.subject_name }}</div>
+                                    </td>
+                                    <td class="p-4 text-center">
+                                        <span class="bg-slate-100 text-slate-600 py-1 px-2.5 rounded-lg text-sm font-bold">{{ result.semester }}</span>
+                                    </td>
+                                    <td class="p-4 text-right">
+                                        <!-- Conditional styling based on grade can be added here -->
+                                        <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 py-1.5 px-3 rounded-lg font-extrabold">
+                                            {{ result.grade | default('-', true) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="p-10 text-center text-slate-400 font-medium">
+                                        <div class="flex flex-col items-center justify-center gap-3">
+                                            <i class="fa-solid fa-medal text-3xl mb-1 text-slate-300"></i>
+                                            <p>No semester results found.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

@@ -59,6 +59,8 @@ class Staff(UserMixin,db.Model):
     grade_handled = db.Column(db.String(3)) 
     password = db.Column(db.String(100))
     semester = db.Column(db.String(100))
+    marks = db.Column(db.String(20))
+    internals = db.Column(db.String(50))
     student = db.relationship('Student_user', foreign_keys=[reg_id], backref='assigned_staff')
 
 
@@ -120,11 +122,38 @@ def home():
 
 @app.route('/resultlogin')
 def resultlogin():
-    return render_template('resultlogin.html')
+    staff = Staff.query.all()
+    student_verify = Student_user.query.all()
+    return render_template('resultlogin.html',staff=staff,studentverify=student_verify)
+
 
 @app.route('/gpa')
 def gpa():
     return render_template('gpacalculator.html')
+
+@app.route('/staff_result')
+def staff_result():
+    return render_template('staff_view.html')
+
+@app.route('/internals')
+def internals():
+    # 1. Ensure the user is logged in
+    if not session.get('student_logged_in'):
+        flash("Please log in to view your internal marks.")
+        return redirect(url_for('resultlogin'))
+    
+    # 2. Get the student's register ID from the session
+    current_student_reg_id = session.get('student_reg_id')
+    
+    # 3. Fetch the Student profile
+    student = Student_user.query.filter_by(reg_id=current_student_reg_id).first()
+    
+    # 4. Fetch all Staff/Subject records linked to this student
+    # Since your Staff table maps directly to the student's reg_id, we can pull data directly from it
+    internal_records = Staff.query.filter_by(reg_id=current_student_reg_id).all()
+    
+    # 5. Send the data to the HTML template
+    return render_template('internals.html', student=student, records=internal_records)
 
 @app.route('/result')
 def result():
@@ -160,18 +189,20 @@ def result():
     # 5. Send both the student profile and the results to the HTML template
     return render_template('result.html', student=student, results=results,result_new=result_new)
 
-# --- CAPTCHA & STUDENT LOGIN ---
-image_captcha = ImageCaptcha(width=200, height=90)
 
-def generate_random_string(length=6):
+
+# --- CAPTCHA & STUDENT LOGIN ---
+image_captcha1= ImageCaptcha(width=200, height=90)
+
+def generate_random_string1(length=6):
     letters = string.ascii_letters + string.digits
     return ''.join(random.choice(letters) for i in range(length))
 
-@app.route('/captcha-image', methods=['GET'])
+@app.route('/captcha-image', methods=['GET'],endpoint='get_captcha')
 def get_captcha():
-    captcha_text = generate_random_string(6) 
-    session['captcha'] = captcha_text.upper() 
-    data = image_captcha.generate(captcha_text)
+    captcha_text = generate_random_string1(6) 
+    session['student_captcha'] = captcha_text.upper() 
+    data = image_captcha1.generate(captcha_text)
     return send_file(io.BytesIO(data.read()), mimetype='image/png', download_name='captcha.png')
 
 @app.route('/resultverify/input', methods=['GET','POST'])
@@ -180,11 +211,11 @@ def verify_login():
     raw_dob = request.form.get('dob', '').strip()
     user_captcha_input = request.form.get('input', '').strip()
 
-    stored_captcha = session.get('captcha')
-    session.pop('captcha', None) 
+    stored_captcha = session.get('student_captcha')
+    session.pop('student_captcha', None) 
 
     if not stored_captcha or user_captcha_input.upper() != stored_captcha:
-        flash("Invalid or expired CAPTCHA. Try again.")
+        flash('Invalid Register Number or DOB', 'student_error')
         return redirect(url_for('resultlogin'))
 
     student = Student_user.query.filter(Student_user.reg_id.ilike(raw_reg_id)).first()
@@ -201,12 +232,63 @@ def verify_login():
     print(f"-------------------")
 
     #debegger ends
-    if student and raw_dob in student.dob:
+    if student and raw_dob == student.dob.strip():
         session['student_logged_in'] = True
         session['student_reg_id'] = student.reg_id
         return redirect(url_for('result'))
     else:
         flash("Invalid Register Number or Date of Birth.")
+        return redirect(url_for('resultlogin'))
+
+
+# --- CAPTCHA & STAFF LOGIN ---
+image_captcha = ImageCaptcha(width=200, height=90)
+
+def generate_random_string(length=6):
+    letters = string.ascii_letters + string.digits
+    return ''.join(random.choice(letters) for i in range(length))
+
+@app.route('/captcha-image2', methods=['GET'],endpoint='get_captcha1')
+def get_captcha1():
+    captcha_text = generate_random_string(6) 
+    session['staff_captcha'] = captcha_text.upper() 
+    data = image_captcha.generate(captcha_text)
+    return send_file(io.BytesIO(data.read()), mimetype='image/png', download_name='captcha.png')
+
+@app.route('/resultverify_staff/input', methods=['GET','POST'])
+def verifystaff_login():
+
+    raw_staff_name = request.form.get('staff_name', '').strip().upper()
+    raw_password = request.form.get('password', '').strip()
+    user_captcha_input1 = request.form.get('input', '').strip()
+
+    stored_captcha1 = session.get('staff_captcha')
+    session.pop('staff_captcha', None) 
+
+    if not stored_captcha1 or user_captcha_input1.upper() != stored_captcha1:
+        flash('Invalid Username or Password', 'staff_error')
+        return redirect(url_for('resultlogin'))
+
+    staff = Staff.query.filter(Staff.staff_name.ilike(raw_staff_name)).first()
+    
+    # --- DEBUGGING PRINTS (Look at your terminal after clicking login) ---
+    print(f"--- DEBUG LOGIN ---")
+    print(f"Typed staff_name: '{raw_staff_name}'")
+    print(f"Typed password: '{raw_password}'")
+    if staff:
+        print(f"Found Staff in DB! DB staff_name: '{staff.staff_name}'")
+        print(f"Staff DB password: '{staff.password}'")
+    else:
+        print(f"Could not find student with Reg ID '{raw_staff_name}' in DB.")
+    print(f"-------------------")
+
+    #debegger ends
+    if staff and raw_password == staff.password.strip():
+        session['staff_logged_in'] = True
+        session['staff_name'] = staff.staff_name
+        return redirect(url_for('staff_result'))
+    else:
+        flash("Invalid Staff Username or Password.", 'staff_error')
         return redirect(url_for('resultlogin'))
 
 # --- ADMIN ROUTES ---
@@ -408,6 +490,8 @@ def import_staff():
                         grade_handled=str(row.get('grade_handled', '')).strip(),
                         password=str(row['password']).strip(),
                         semester=str(row.get('semester', '')).strip(),
+                        marks = str(row.get('marks','')).strip(),
+                        internals=str(row.get('internals', '')).strip(),
                         reg_id=raw_reg_id  # NEW: Pushing the reg_id to the database
                     )
                     db.session.add(new_staff)
@@ -423,4 +507,4 @@ def import_staff():
     return render_template('import.html') # Reusing your existing import template
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000, host='0.0.0.0')

@@ -25,6 +25,8 @@
         </div>
     </nav>
 
+    
+
    <main class="flex-1 p-6 md:p-10 max-w-6xl mx-auto w-full">
         
         <h2 class="text-3xl font-bold mb-6 text-gray-900">Student Academic Dashboard</h2>
@@ -35,7 +37,9 @@
             <p class="my-2 text-slate-600"><strong class="text-slate-900">Date of Birth:</strong> {{ student.dob }}</p>
             <p class="my-2 text-slate-600"><strong class="text-slate-900">Department:</strong> {{ student.dept }}</p>
             <p class="my-2 text-slate-600"><strong class="text-slate-900">Institution:</strong> {{ student.institute }}</p>
-            <p class="my-2 text-slate-600"><strong class="text-slate-900">Year:</strong> {{ student.year }} <span class="mx-2 text-slate-300">|</span> <strong class="text-slate-900">Semester:</strong> {{ student.semester }}</p>
+             {% for result in results %}
+            <p class="my-2 text-slate-600"><strong class="text-slate-900">Year:</strong> {{ student.year }} <span class="mx-2 text-slate-300">|</span> <strong class="text-slate-900">Semester:</strong> {{ result.semester }}</p>
+            {% endfor %}
         </div>
 
         <h3 class="text-2xl font-semibold mb-4 text-gray-900"> Exam Results</h3>
